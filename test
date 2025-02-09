@@ -1,0 +1,16 @@
+Error detected while processing /Users/astral/.config/nvim/init.lua:
+Failed to load `plugins`
+
+...local/share/nvim/lazy/lazy.nvim/lua/lazy/core/plugin.lua:156: attempt to call a nil value
+
+# stacktrace:
+  - ~/.config/nvim/lua/plugins/init.lua:6
+  - ~/.config/nvim/lua/config/lazy.lua:25
+  - ~/.config/nvim/init.lua:11
+Failed to load `plugins.nvim-treesitter`
+
+...local/share/nvim/lazy/lazy.nvim/lua/lazy/core/plugin.lua:156: attempt to call a nil value
+
+# stacktrace:
+  - ~/.config/nvim/lua/config/lazy.lua:25
+[otter] No treesitter parser found for current buffer. Can't activate.
