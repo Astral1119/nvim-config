@@ -1,5 +1,15 @@
 return {
-    {
+  {
+    "GCBallesteros/jupytext.nvim",
+    config = function()
+      require("jupytext").setup({
+        style = "markdown",
+        output_extension = "md",
+        force_ft = "markdown",
+      })
+    end,
+  },
+  {
     "benlubas/molten-nvim",
     config = function()
       vim.g.molten_auto_open_output = false
@@ -17,5 +27,39 @@ return {
       vim.keymap.set("n", "<localleader>md", ":MoltenDelete<CR>", { desc = "delete Molten cell", silent = true })
       vim.keymap.set("n", "<localleader>mx", ":MoltenOpenInBrowser<CR>", { desc = "open output in browser", silent = true })
    end,
+  },
+  {
+    "quarto-dev/quarto-nvim",
+    dependencies = {
+      "jmbuhr/otter.nvim",
+      "neovim/nvim-lspconfig",
+    },
+    ft = { "quarto", "markdown" },
+    config = function()
+      local quarto = require("quarto")
+      quarto.setup({
+        lspFeatures = {
+          languages = { "python" },
+          diagnostics = {
+            enabled = true,
+            triggers = { "BufWritePost" },
+          },
+          completion = {
+            enabled = true,
+          },
+        },
+        keymap = {
+          hover = "H",
+          definition = "gd",
+          rename = "<leader>rn",
+          references = "gr",
+          format = "<leader>gf",
+        },
+        codeRunner = {
+          enabled = true,
+          default_method = "molten",
+        },
+      })
+    end,
   }
 }
