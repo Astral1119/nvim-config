@@ -15,25 +15,34 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
-
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
-    -- import your plugins
     { import = "plugins" },
+    -- Add oil.nvim configuration inside Lazy
+    {
+      "stevearc/oil.nvim",
+      config = function()
+        require("oil").setup({
+          default_file_explorer = false,
+          experimental_watch_for_changes = true,
+          buf_options = {
+            modifiable = true,
+          },
+        })
+      end
+    }
   },
-  -- Configure any other settings here. See the documentation for more details.
-  -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
-  -- automatically check for plugin updates
   checker = { enabled = true },
 })
 
+-- load oil
+require("oil").setup({
+  default_file_explorer = false,
+})
+
+-- load noice
 require("noice").setup({
   lsp = {
     -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
@@ -51,4 +60,29 @@ require("noice").setup({
     inc_rename = false, -- enables an input dialog for inc-rename.nvim
     lsp_doc_border = false, -- add a border to hover docs and signature help
   },
+  views = {
+    cmdline_popup = {
+      size = {
+        width = "auto",
+        height = "auto",
+      },
+      win_options = {
+        winblend = 0, -- Make it transparent
+        winhighlight = "NormalFloat:Normal,FloatBorder:Normal",
+      },
+    },
+  },
 })
+
+
+-- load mason
+require("mason").setup()
+require('mason-lspconfig').setup({
+  ensure_installed = {'pyright', 'clangd', 'texlab'},
+  handlers = {
+    function(server_name)
+      require('lspconfig')[server_name].setup({})
+    end,
+  },
+})
+

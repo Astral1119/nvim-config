@@ -6,17 +6,26 @@ vim.g.molten_auto_open_output = true
 vim.g.molten_copy_output = true
 
 vim.opt.relativenumber = true
+vim.opt.number = true
 vim.opt.cursorline = true
 
 vim.opt.mouse = 'a'
 
-vim.opt.breakindent = true
 vim.opt.undofile = true
+
+--[[
+-- line wrapping
+vim.opt.wrap = true
+vim.opt.breakindent = true
+vim.opt.showbreak = string.rep(" ", 5) -- Make it so that long lines wrap smartly
+vim.opt.linebreak = true
+-- Remap for dealing with word wrap
+vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+--]]
 
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-
-vim.opt.linebreak = true
 
 vim.opt.signcolumn = 'yes:1'
 
@@ -32,7 +41,48 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 vim.opt.inccommand = 'split'
 
--- VIM KEYMAP SETTINGS
+vim.opt.winblend = 20  -- Semi-transparent floating windows
+vim.opt.pumblend = 20  -- Semi-transparent popups (completion menu)
+
+vim.cmd([[
+  augroup TransparentBackground
+    autocmd!
+    autocmd ColorScheme * highlight Normal ctermbg=none guibg=none
+    autocmd ColorScheme * highlight NormalNC ctermbg=none guibg=none
+    autocmd ColorScheme * highlight NonText ctermbg=none guibg=none
+    autocmd ColorScheme * highlight EndOfBuffer ctermbg=none guibg=none
+    autocmd ColorScheme * highlight FloatBorder guibg=none
+    autocmd ColorScheme * highlight NormalFloat guibg=none
+    autocmd ColorScheme * highlight TelescopeNormal guibg=none
+    autocmd ColorScheme * highlight TelescopeBorder guibg=none
+    autocmd ColorScheme * highlight Pmenu guibg=none
+    autocmd ColorScheme * highlight PmenuSel guibg=#44475a
+    autocmd ColorScheme * highlight WinSeparator guibg=none
+    autocmd ColorScheme * highlight StatusLine guibg=none
+    autocmd ColorScheme * highlight StatusLineNC guibg=none
+    autocmd ColorScheme * highlight MsgArea guibg=none
+    autocmd ColorScheme * highlight MsgSeparator guibg=none
+  augroup END
+]])
+
+vim.cmd([[
+  augroup TransparentBackground
+    autocmd!
+    autocmd ColorScheme * highlight NoiceCmdline guibg=none ctermbg=none
+    autocmd ColorScheme * highlight NoiceCmdlinePopup guibg=none ctermbg=none
+    autocmd ColorScheme * highlight NoiceCmdlinePopupBorder guibg=none ctermbg=none
+    autocmd ColorScheme * highlight NoicePopup guibg=none ctermbg=none
+    autocmd ColorScheme * highlight NoicePopupBorder guibg=none ctermbg=none
+  augroup END
+]])
+
+vim.cmd([[
+  augroup TransparentBackground
+    autocmd!
+    autocmd ColorScheme * highlight Normal ctermbg=none guibg=none
+    autocmd VimEnter * highlight Normal ctermbg=none guibg=none
+  augroup END
+]])
 
 -- get rid of search highlights
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear highlights', silent = true })
@@ -45,6 +95,9 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -- copy to system clipboard
 vim.keymap.set("v", "<leader>c", "\"+y", { desc = "Copy to clipboard", silent = true })
+
+-- cut to system clipboard
+vim.keymap.set("v", "<leader>x", "\"+ygvx", { desc = "Cut to clipboard", silent = true })
 
 
 -- kickstart highlights yanked text
@@ -85,8 +138,6 @@ vim.cmd("set linebreak")
 vim.g.markdown_fenced_languages = {'python', 'cpp'}
 
 require("config.lazy")
-
--- require'lspconfig'.harper_ls.setup{}
 
 
 -- Provide a command to create a blank new Python notebook
@@ -145,5 +196,33 @@ end, {
 })
 
 
--- load mason
-require("mason").setup()
+-- LSP STUFF --
+
+-- load lspconfig
+local lspconfig_defaults = require('lspconfig').util.default_config
+lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+  'force',
+  lspconfig_defaults.capabilities,
+  require('cmp_nvim_lsp').default_capabilities()
+)
+
+-- STUFF TAKEN FROM LSP-ZERO --
+-- This is where you enable features that only work
+-- if there is a language server active in the file
+vim.api.nvim_create_autocmd('LspAttach', {
+  desc = 'LSP actions',
+  callback = function(event)
+    local opts = {buffer = event.buf}
+
+    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+    vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+  end,
+})
