@@ -1,3 +1,12 @@
+-- open zathura with <leader>z
+-- useful for viewing tex files
+vim.api.nvim_set_keymap(
+  'n',
+  '<leader>lz',
+  [[:!zathura %:r.pdf &<CR> &<CR>]],
+  { noremap = true, silent = true }
+)
+
 return {
   {
     "lervag/vimtex",

@@ -6,10 +6,13 @@ return {
   },
   opts = function()
     return {
-      -- Your Treesitter configuration here
       priority = 500,
-      highlight = { enable = true }, 
       ensure_installed = { "cpp", "c", "lua", "vim", "vimdoc", "query", "python", "markdown", "markdown_inline", "html", "latex", "sql" },
+
+      highlight = { enable = true },
+
+      indent = { enable = true },
+
       textobjects = {
         move = {
           enable = true,

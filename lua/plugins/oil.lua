@@ -1,10 +1,15 @@
 return {
-  'stevearc/oil.nvim',
-  ---@module 'oil'
-  ---@type oil.SetupOpts
-  opts = {},
-  -- Optional dependencies
-  dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
-  -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+  "stevearc/oil.nvim",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
   lazy = false,
+  config = function()
+    require("oil").setup({
+      default_file_explorer = false,
+      experimental_watch_for_changes = true,
+      buf_options = {
+        modifiable = true,
+      },
+    })
+  end
 }
+

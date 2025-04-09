@@ -1,8 +1,9 @@
+_G.Snacks = _G.Snacks or {} -- to resolve LSP warnings
+
 return {
   "folke/snacks.nvim",
   priority = 1000,
   lazy = false,
-  ---@type snacks.Config
   opts = {
     bigfile = { enabled = true },
     dashboard = { enabled = true },
@@ -21,8 +22,20 @@ return {
     words = { enabled = true },
     styles = {
       notification = {
-        -- wo = { wrap = true } -- Wrap notifications
-      }
+        wo = { wrap = true } -- wrap notifications
+      },
+      snacks_image = {
+        relative = "editor",
+        col = -1,
+      },
+    },
+    image = {
+      enabled = true,
+      doc = {
+        inline = false,
+        float = true,
+        conceal = true,
+      },
     }
   },
   keys = {
