@@ -1,5 +1,9 @@
 -- init.lua
 
+-- needs to be loaded before lazy
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
+
 -- lazy plugin manager
 require("config.lazy")
 require("config.options")

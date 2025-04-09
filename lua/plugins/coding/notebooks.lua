@@ -1,6 +1,9 @@
--- provide a command to create a blank new Python notebook
--- note: the metadata is needed for Jupytext to understand how to parse the notebook.
--- if you use another language than Python, you should change it in the template.
+-- lua/plugins/notebooks.lua
+
+-- custom command to create a new
+-- jupyter notebook with metadata
+
+-- TODO: separate this into a separate file
 local default_notebook = [[
   {
     "cells": [
@@ -53,6 +56,8 @@ end, {
   complete = 'file'
 })
 
+
+-- also load relevant plugins
 return {
   {
     "GCBallesteros/jupytext.nvim",

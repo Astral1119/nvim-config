@@ -1,6 +1,4 @@
 -- config/options.lua
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
 vim.g.molten_auto_open_output = true
 vim.g.molten_copy_output = true
 
