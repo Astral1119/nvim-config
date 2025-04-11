@@ -1,4 +1,4 @@
--- open zathura with <leader>z
+-- load zathura with <leader>lz
 -- useful for viewing tex files
 vim.api.nvim_set_keymap(
   'n',

@@ -34,6 +34,8 @@ return {
       doc = {
         inline = false,
         float = true,
+        max_width = 100,
+        max_height = 20,
         conceal = true,
       },
     }

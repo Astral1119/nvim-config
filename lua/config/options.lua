@@ -43,7 +43,8 @@ opt.fillchars = {
   eob = " ",
 }
 
-opt.inccommand = 'nosplit'
+-- instead of `nosplit` for now
+opt.inccommand = 'split'
 
 opt.linebreak = true
 -- opt.breakindent = true
@@ -52,3 +53,5 @@ opt.smartindent = true
 opt.tabstop = 2
 -- opt.softtabstop = 2
 opt.shiftwidth = 2
+
+opt.scrolloff = 10

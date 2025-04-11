@@ -3,6 +3,7 @@ local oxide = require('plugins.lsp.oxide')
 return {
   "williamboman/mason.nvim",
   "williamboman/mason-lspconfig.nvim",
+  { 'j-hui/fidget.nvim', opts = {} },
 
   {
     "folke/lazydev.nvim",
@@ -10,8 +11,7 @@ return {
     opts = {
       library = {
         -- See the configuration section for more details
-        -- Load luvit types when the `vim.uv` word is found
-        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+        -- Load luvit types when the `vim.uv` word is found { path = "${3rd}/luv/library", words = { "vim%.uv" } },
       },
     },
   },
