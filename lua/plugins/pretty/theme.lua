@@ -27,6 +27,8 @@ return {
       vim.opt.fillchars = { horiz = '━', horizup = '┻', horizdown = '┳', vert = '┃', vertleft = '┫', vertright = '┣', verthoriz = '╋', }
 
       vim.cmd("colorscheme moonfly")
+      -- vim.api.nvim_set_hl(0, "Visual", { bg = "#44475a" })
+      vim.api.nvim_set_hl(0, "Visual", { bg = "#762579" })
     end
   }
 }

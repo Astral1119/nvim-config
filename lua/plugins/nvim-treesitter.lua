@@ -7,7 +7,7 @@ return {
   opts = function()
     return {
       priority = 500,
-      ensure_installed = { "cpp", "c", "lua", "vim", "vimdoc", "query", "python", "markdown", "markdown_inline", "html", "latex", "sql" },
+      ensure_installed = { "cpp", "c", "lua", "vim", "vimdoc", "query", "python", "markdown", "markdown_inline", "html", "latex", "sql", "gsheets" },
 
       highlight = { enable = true },
 
@@ -51,6 +51,25 @@ return {
     }
   end,
   config = function(_, opts)
+
+    vim.filetype.add({
+      extension = {
+        gse = "gsheets",
+        gsf = "gsheets",
+        gsheets = "gsheets",
+      },
+    })
+
+    local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+
+    parser_config.gsheets = {
+      install_info = {
+        url = "https://github.com/Astral1119/tree-sitter-gsheets",
+        files = { "src/parser.c" }, -- add "scanner.c" if the grammar has one
+        branch = "main", -- or the correct branch
+      },
+      filetype = "gsheets",
+    }
     require('nvim-treesitter.configs').setup(opts)
   end,
 }
