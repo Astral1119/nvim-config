@@ -1,7 +1,7 @@
 return {
-  -- may use giuxtaposition/blink-cmp-copilot later
-  { "github/copilot.vim" },
-  { "tpope/vim-sleuth" },
+  {
+    "github/copilot.vim"
+  },
   {
      "amitds1997/remote-nvim.nvim",
      version = "*", -- Pin to GitHub releases

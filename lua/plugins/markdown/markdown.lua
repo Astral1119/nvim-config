@@ -17,6 +17,12 @@ return {
         enable = true,
         debounce = 100,
         hybrid_modes = { "n", "i", "v" },
+        linewise_hybrid_mode = true,
+      },
+      markdown = {
+        list_items = {
+          enable = false,
+        }
       },
     }
   },

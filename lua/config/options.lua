@@ -47,11 +47,14 @@ opt.fillchars = {
 opt.inccommand = 'split'
 
 opt.linebreak = true
--- opt.breakindent = true
 opt.expandtab = true
 opt.smartindent = true
 opt.tabstop = 2
 -- opt.softtabstop = 2
 opt.shiftwidth = 2
+opt.autoindent = true
+
+opt.breakindent = true
+opt.breakindentopt = 'list:2'
 
 opt.scrolloff = 10

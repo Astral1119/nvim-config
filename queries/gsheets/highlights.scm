@@ -21,7 +21,9 @@
 ; Operators
 [
   "+"
-  "-" "*" "/"
+  "-"
+  "*"
+  "/"
   "^"
   "&"
   "%"
@@ -42,6 +44,8 @@
 [
   "{"
   "}"
+  "("
+  ")"
 ] @punctuation.bracket
 
 ; Literals
@@ -54,11 +58,13 @@
 
 ; Function calls
 (function_call
-  (identifier) @function)
+  function_name: (identifier) @function)
 
 ; Cell references and patterns
-(cell_reference) @variable
-(cell_pattern) @variable
+(cell_pattern) @variable.builtin
+(sheet_reference
+  (identifier) @variable.builtin
+)
 
 ; Expressions
 (expression) @expression

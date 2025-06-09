@@ -29,6 +29,8 @@ return {
       vim.cmd("colorscheme moonfly")
       -- vim.api.nvim_set_hl(0, "Visual", { bg = "#44475a" })
       vim.api.nvim_set_hl(0, "Visual", { bg = "#762579" })
+      -- set outlines for floating windows to something lighter
+      vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#6272a4" })
     end
   }
 }

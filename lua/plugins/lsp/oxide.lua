@@ -5,7 +5,7 @@ local oxide = {}
 function oxide.on_attach(client, bufnr)
   -- CodeLens Support
   local function check_codelens_support()
-    local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
+    local clients = vim.lsp.get_clients({ bufnr = bufnr })
     for _, c in ipairs(clients) do
       if c.server_capabilities.codeLensProvider then
         return true
