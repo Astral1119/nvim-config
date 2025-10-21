@@ -52,17 +52,10 @@ return {
       })
 
       -- Python
-      vim.lsp.config('pyright', {
-        cmd = { 'pyright-langserver', '--stdio' },
-        filetypes = { 'python' },
-        root_markers = { 'pyproject.toml', 'setup.py', '.git' },
-        settings = {
-          python = {
-            analysis = {
-              typeCheckingMode = "basic",
-              autoImportCompletions = true,
-              useLibraryCodeForTypes = true,
-            }
+      vim.lsp.config('ruff', {
+        init_options = {
+          settings = {
+            -- Ruff language server settings go here
           }
         }
       })
@@ -92,12 +85,12 @@ return {
       })
 
       -- Enable LSPs
-      vim.lsp.enable({ 'lua_ls', 'pyright', 'rust_analyzer', 'markdown_oxide' })
+      vim.lsp.enable({ 'lua_ls', 'ruff', 'rust_analyzer', 'markdown_oxide' })
 
       -- Mason setup
       require('mason').setup()
       require('mason-lspconfig').setup({
-        ensure_installed = { 'lua_ls', 'pyright', 'rust_analyzer' },
+        ensure_installed = { 'lua_ls', 'ruff', 'pyright', 'rust_analyzer' },
         automatic_installation = true,
         automatic_enable = true,
       })

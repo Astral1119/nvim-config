@@ -57,6 +57,7 @@ return {
         gse = "gsheets",
         gsf = "gsheets",
         gsheets = "gsheets",
+        mdx = "mdx",
       },
     })
 
@@ -70,6 +71,13 @@ return {
       },
       filetype = "gsheets",
     }
+
+    parser_config.mdx = {
+      install_info = nil,  -- No separate parser, use built-in markdown
+      filetype = "mdx",
+    }
+    vim.treesitter.language.register('markdown', 'mdx')  -- also works
+
     require('nvim-treesitter.configs').setup(opts)
   end,
 }

@@ -1,15 +1,14 @@
-# Plugins
+# plugins
 - [barbar.nvim](https://github.com/romgrk/barbar.nvim)
 
-# Dotfiles
+# dotfiles
 - [SteveWolligandt](https://github.com/SteveWolligandt/dotfiles)
 
 # TODO
-- [ ] Restructure `notebooks`
-- [x] Implement [`oxide.md`](https://github.com/Feel-ix-343/markdown-oxide)
-- [ ] Set up Kitty as an alternative (currently using iTerm2 and Ghostty)
+- [ ] Set up Kitty as an alternative (currently using Ghostty)
+- [ ] Fix GSheets queries and rework the TS parser
 
-## LazyVim Categories
+## lazyvim categories
 - [x] Coding
 - [x] Colorscheme
 - [ ] Editor

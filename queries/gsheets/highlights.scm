@@ -55,10 +55,12 @@
 
 ; Identifiers
 (identifier) @variable
+(bracket_identifier) @string.special
+(bracket_access "." @punctuation.delimiter)
 
 ; Function calls
 (function_call
-  function_name: (identifier) @function)
+  function_name: (_) @function)
 
 ; Cell references and patterns
 (cell_pattern) @variable.builtin

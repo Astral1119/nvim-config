@@ -6,4 +6,6 @@ return {
   require("plugins.snacks"),
   require("plugins.lsp"),
   require("plugins.which-key"),
+  require("plugins.image"),
+  require("plugins.lualine"),
 }

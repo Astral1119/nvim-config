@@ -31,7 +31,16 @@ function oxide.on_attach(client, bufnr)
       "Daily",
       function(args)
         local input = args.args
-        vim.lsp.buf.execute_command({ command = "jump", arguments = { input } })
+        local clients = vim.lsp.get_clients { name = "markdown_oxide" }
+
+        if #clients == 0 then
+          vim.notify("No ts_ls client found", vim.log.levels.ERROR)
+          return
+        end
+
+        local cur_client = clients[1]
+
+        cur_client:exec_cmd({ command = "jump", arguments = { input }, title = "" })
       end,
       { desc = 'Open daily note', nargs = "*" }
     )

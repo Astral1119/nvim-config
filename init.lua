@@ -45,4 +45,7 @@ vim.g.copilot_no_tab_map = true
 
 vim.g.markdown_fenced_languages = {'python', 'cpp'}
 
+vim.g.python3_host_prog=vim.fn.expand("~/.pyenv/versions/neovim/bin/python3")
+
+vim.filetype.add({ extension = { mdx = "mdx" } })
 
