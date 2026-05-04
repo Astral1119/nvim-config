@@ -10,4 +10,7 @@ return {
      },
      config = true,
   },
+  {
+    "sindrets/diffview.nvim"
+  }
 }

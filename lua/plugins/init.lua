@@ -8,4 +8,5 @@ return {
   require("plugins.which-key"),
   require("plugins.image"),
   require("plugins.lualine"),
+  require("plugins.ai"),
 }

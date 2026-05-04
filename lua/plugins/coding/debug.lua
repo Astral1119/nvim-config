@@ -18,8 +18,6 @@ return {
     'mason-org/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
 
-    -- Add your own debuggers here
-    'leoluz/nvim-dap-go',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -90,8 +88,8 @@ return {
       -- You'll need to check that you have the required things installed
       -- online, please don't ask me how to install them :)
       ensure_installed = {
-        -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        'codelldb',        -- C, C++, Rust
+        'js-debug-adapter', -- JavaScript, TypeScript
       },
     }
 
@@ -133,15 +131,6 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    -- Install golang specific config
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
-      },
-    }
-
     dap.adapters.codelldb = {
 			type = "server",
 			port = "${port}",
@@ -153,22 +142,64 @@ return {
 		}
 
 		dap.configurations.cpp = {
-			{
-				name = "Launch file",
-				type = "codelldb",
-				request = "launch",
-				program = function()
-					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-				end,
-				cwd = "${workspaceFolder}",
-				stopOnEntry = false,
-				runInTerminal = false,
-			},
+		  {
+		    name = "Launch file (with args)",
+		    type = "codelldb",
+		    request = "launch",
+		    program = function()
+		      return vim.fn.input(
+			"Path to executable: ",
+			vim.fn.getcwd() .. "/",
+			"file"
+		      )
+		    end,
+		    args = function()
+		      local input = vim.fn.input("Program args: ")
+		      return vim.split(input, " ", { trimempty = true })
+		    end,
+		    cwd = "${workspaceFolder}",
+		    stopOnEntry = false,
+		    runInTerminal = false,
+		  },
 		}
-		require("dap").set_log_level("DEBUG")
 
 		dap.configurations.c = dap.configurations.cpp
 		dap.configurations.rust = dap.configurations.cpp
+
+    -- JS / TS: js-debug-adapter (installed via Mason)
+    local js_adapter = bin_locations .. 'js-debug-adapter'
+    for _, adapter in ipairs({ 'node', 'chrome' }) do
+      dap.adapters[adapter] = {
+        type = 'server',
+        host = 'localhost',
+        port = '${port}',
+        executable = {
+          command = 'node',
+          args = { js_adapter, '${port}' },
+        },
+      }
+    end
+
+    for _, lang in ipairs({ 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' }) do
+      dap.configurations[lang] = {
+        {
+          type = 'node',
+          request = 'launch',
+          name = 'Launch file (node)',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+          sourceMaps = true,
+        },
+        {
+          type = 'chrome',
+          request = 'launch',
+          name = 'Launch Chrome',
+          url = 'http://localhost:3000',
+          webRoot = '${workspaceFolder}',
+          sourceMaps = true,
+        },
+      }
+    end
 
   end,
 }

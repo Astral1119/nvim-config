@@ -1,83 +1,180 @@
+-- nvim-treesitter `main` branch (rewrite, Neovim 0.11+/0.12 compatible).
+-- The old `master` branch is frozen and crashes on 0.12 because directives
+-- like `set-lang-from-info-string!` now receive quantified-capture lists.
+--
+-- Differences from master:
+--   * No more `require('nvim-treesitter.configs').setup(opts)`.
+--   * No `highlight`/`indent` options — enable per-buffer with
+--     `vim.treesitter.start()` and `nvim-treesitter.indentexpr()`.
+--   * No `ensure_installed` option — call `require('nvim-treesitter').install{}`.
+--   * Custom parsers register via `require('nvim-treesitter.parsers').<name> = {...}`,
+--     ideally inside a `User TSUpdate` autocmd so `:TSUpdate` sees them.
+--   * Cannot be lazy-loaded.
+--
+-- Parsers are compiled locally and require the `tree-sitter` CLI on PATH.
+
+local ensure_installed = {
+  -- core
+  "lua", "vim", "vimdoc", "query",
+  -- systems
+  "c", "cpp", "rust",
+  -- web
+  "javascript", "typescript", "tsx", "html", "css", "json",
+  -- scripting / data
+  "python", "bash",
+  -- documents
+  "markdown", "markdown_inline", "latex", "yaml",
+  -- custom / other
+  "sql", "gsheets", "lattice",
+}
+
+-- Filetypes that should get treesitter highlighting + indent.
+-- Includes filetypes whose parser is registered under a different name
+-- via `vim.treesitter.language.register` (e.g. mdx → markdown).
+local ts_filetypes = {
+  "lua", "vim", "help", "query",
+  "c", "cpp", "rust",
+  "javascript", "typescript", "typescriptreact", "html", "css", "json",
+  "python", "bash", "sh",
+  "markdown", "mdx", "latex", "tex", "yaml",
+  "sql", "gsheets", "lattice",
+}
+
+local function register_custom_parsers()
+  local parsers = require("nvim-treesitter.parsers")
+
+  parsers.gsheets = {
+    install_info = {
+      url = "https://github.com/Astral1119/tree-sitter-gsheets",
+      branch = "main",
+    },
+  }
+
+  parsers.lattice = {
+    install_info = {
+      path = vim.fn.expand("~/sandbox/current/lattice/tree-sitter-lattice"),
+    },
+  }
+end
+
 return {
-  'nvim-treesitter/nvim-treesitter',
-  build = ':TSUpdate',
-  dependencies = {
-    'nvim-treesitter/nvim-treesitter-textobjects',
+  {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false, -- main branch does not support lazy-loading
+    build = ":TSUpdate",
+    config = function()
+      -- Filetype detection (kept here so it lands before any buffers open).
+      vim.filetype.add({
+        extension = {
+          gse = "gsheets",
+          gsf = "gsheets",
+          gsheets = "gsheets",
+          mdx = "mdx",
+        },
+      })
+
+      -- Make `mdx` use the markdown parser.
+      vim.treesitter.language.register("markdown", "mdx")
+
+      -- Register custom parsers BOTH directly (so the immediate install call
+      -- below sees them) AND inside the User TSUpdate autocmd (so subsequent
+      -- :TSUpdate runs see them too).
+      register_custom_parsers()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TSUpdate",
+        callback = register_custom_parsers,
+      })
+
+      -- setup() is optional on main; only needed to override install_dir.
+      -- Async install of all desired parsers.
+      require("nvim-treesitter").install(ensure_installed)
+
+      -- Enable highlight + indent per buffer for our chosen filetypes.
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = ts_filetypes,
+        callback = function(args)
+          local ok = pcall(vim.treesitter.start, args.buf)
+          if ok then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+    end,
   },
-  opts = function()
-    return {
-      priority = 500,
-      ensure_installed = { "cpp", "c", "lua", "vim", "vimdoc", "query", "python", "markdown", "markdown_inline", "html", "latex", "sql", "gsheets" },
 
-      highlight = { enable = true },
-
-      indent = { enable = true },
-
-      textobjects = {
-        move = {
-          enable = true,
-          set_jumps = false, -- you can change this if you want.
-          goto_next_start = {
-            --- ... other keymaps
-            ["]b"] = { query = "@code_cell.inner", desc = "next code block" },
-          },
-          goto_previous_start = {
-            --- ... other keymaps
-            ["[b"] = { query = "@code_cell.inner", desc = "previous code block" },
-          },
-        },
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main",
+    lazy = false,
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    init = function()
+      -- Disable the plugin's default keymaps; we set our own below.
+      vim.g.no_plugin_maps = true
+    end,
+    config = function()
+      require("nvim-treesitter-textobjects").setup({
         select = {
-          enable = true,
-          lookahead = true, -- you can change this if you want
-          keymaps = {
-            --- ... other keymaps
-            ["ib"] = { query = "@code_cell.inner", desc = "in block" },
-            ["ab"] = { query = "@code_cell.outer", desc = "around block" },
-          },
+          lookahead = true,
+          include_surrounding_whitespace = false,
         },
-        swap = { -- Swap only works with code blocks that are under the same
-          -- markdown header
-          enable = true,
-          swap_next = {
-            --- ... other keymap
-            ["<leader>sbl"] = "@code_cell.outer",
-          },
-          swap_previous = {
-            --- ... other keymap
-            ["<leader>sbh"] = "@code_cell.outer",
-          },
+        move = {
+          set_jumps = true,
         },
+      })
+
+      local select = require("nvim-treesitter-textobjects.select")
+      local move = require("nvim-treesitter-textobjects.move")
+      local swap = require("nvim-treesitter-textobjects.swap")
+
+      -- Selection (visual + operator-pending)
+      local select_maps = {
+        ["af"] = { "@function.outer",    "Around function" },
+        ["if"] = { "@function.inner",    "Inside function" },
+        ["aa"] = { "@parameter.outer",   "Around parameter" },
+        ["ia"] = { "@parameter.inner",   "Inside parameter" },
+        ["ac"] = { "@conditional.outer", "Around conditional" },
+        ["ic"] = { "@conditional.inner", "Inside conditional" },
+        ["ib"] = { "@code_cell.inner",   "Inside code block" },
+        ["ab"] = { "@code_cell.outer",   "Around code block" },
       }
-    }
-  end,
-  config = function(_, opts)
+      for lhs, spec in pairs(select_maps) do
+        vim.keymap.set({ "x", "o" }, lhs, function()
+          select.select_textobject(spec[1], "textobjects")
+        end, { desc = spec[2] })
+      end
 
-    vim.filetype.add({
-      extension = {
-        gse = "gsheets",
-        gsf = "gsheets",
-        gsheets = "gsheets",
-        mdx = "mdx",
-      },
-    })
+      -- Movement (normal + visual + operator-pending)
+      local next_start = {
+        ["]f"] = { "@function.outer",  "Next function" },
+        ["]a"] = { "@parameter.outer", "Next parameter" },
+        ["]b"] = { "@code_cell.inner", "Next code block" },
+      }
+      local prev_start = {
+        ["[f"] = { "@function.outer",  "Previous function" },
+        ["[a"] = { "@parameter.outer", "Previous parameter" },
+        ["[b"] = { "@code_cell.inner", "Previous code block" },
+      }
+      for lhs, spec in pairs(next_start) do
+        vim.keymap.set({ "n", "x", "o" }, lhs, function()
+          move.goto_next_start(spec[1], "textobjects")
+        end, { desc = spec[2] })
+      end
+      for lhs, spec in pairs(prev_start) do
+        vim.keymap.set({ "n", "x", "o" }, lhs, function()
+          move.goto_previous_start(spec[1], "textobjects")
+        end, { desc = spec[2] })
+      end
 
-    local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-
-    parser_config.gsheets = {
-      install_info = {
-        url = "https://github.com/Astral1119/tree-sitter-gsheets",
-        files = { "src/parser.c" }, -- add "scanner.c" if the grammar has one
-        branch = "main", -- or the correct branch
-      },
-      filetype = "gsheets",
-    }
-
-    parser_config.mdx = {
-      install_info = nil,  -- No separate parser, use built-in markdown
-      filetype = "mdx",
-    }
-    vim.treesitter.language.register('markdown', 'mdx')  -- also works
-
-    require('nvim-treesitter.configs').setup(opts)
-  end,
+      -- Swap
+      vim.keymap.set("n", "<leader>sbl", function() swap.swap_next("@code_cell.outer") end,
+        { desc = "Swap code block with next" })
+      vim.keymap.set("n", "<leader>sal", function() swap.swap_next("@parameter.outer") end,
+        { desc = "Swap parameter with next" })
+      vim.keymap.set("n", "<leader>sbh", function() swap.swap_previous("@code_cell.outer") end,
+        { desc = "Swap code block with previous" })
+      vim.keymap.set("n", "<leader>sah", function() swap.swap_previous("@parameter.outer") end,
+        { desc = "Swap parameter with previous" })
+    end,
+  },
 }

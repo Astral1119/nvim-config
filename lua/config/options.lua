@@ -1,7 +1,4 @@
 -- config/options.lua
-vim.g.molten_auto_open_output = true
-vim.g.molten_copy_output = true
-
 local opt = vim.opt
 
 opt.undofile = true

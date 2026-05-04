@@ -3,25 +3,12 @@
 local oxide = {}
 
 function oxide.on_attach(client, bufnr)
-  -- CodeLens Support
-  local function check_codelens_support()
-    local clients = vim.lsp.get_clients({ bufnr = bufnr })
-    for _, c in ipairs(clients) do
-      if c.server_capabilities.codeLensProvider then
-        return true
-      end
-    end
-    return false
+  -- CodeLens: enable auto-refresh for this buffer if the server supports it.
+  -- Replaces the old `codelens.refresh` + manual TextChanged/CursorHold loop;
+  -- `codelens.enable(true, ...)` registers its own refresh autocmds internally.
+  if client.server_capabilities.codeLensProvider then
+    vim.lsp.codelens.enable(true, { bufnr = bufnr })
   end
-
-  vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertLeave', 'CursorHold', 'LspAttach', 'BufEnter' }, {
-    buffer = bufnr,
-    callback = function()
-      if check_codelens_support() then
-        vim.lsp.codelens.refresh({ bufnr = bufnr })
-      end
-    end
-  })
 
   vim.api.nvim_exec_autocmds('User', { pattern = 'LspAttached' })
 
@@ -34,7 +21,7 @@ function oxide.on_attach(client, bufnr)
         local clients = vim.lsp.get_clients { name = "markdown_oxide" }
 
         if #clients == 0 then
-          vim.notify("No ts_ls client found", vim.log.levels.ERROR)
+          vim.notify("No markdown_oxide client found", vim.log.levels.ERROR)
           return
         end
 

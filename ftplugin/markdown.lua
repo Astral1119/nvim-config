@@ -1,2 +1,2 @@
 -- ~/.config/nvim/ftplugin/markdown.lua
-require("quarto").activate()
+-- require("quarto").activate()  -- disabled; re-enable with notebooks.lua
