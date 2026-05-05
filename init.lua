@@ -17,9 +17,14 @@ end
 require("config.lazy")
 require("config.options")
 
--- Lattice Formula Steps plugin
-vim.opt.rtp:prepend(vim.fn.expand("~/sandbox/current/lattice/editors/neovim"))
-require("lattice.formula_steps").setup({ keybind = "<leader>ls" })
+-- Lattice Formula Steps plugin (only when lattice is checked out locally)
+local lattice_nvim_dir = vim.fn.expand("~/sandbox/current/lattice/editors/neovim")
+if vim.fn.isdirectory(lattice_nvim_dir) == 1 then
+  vim.opt.rtp:prepend(lattice_nvim_dir)
+  pcall(function()
+    require("lattice.formula_steps").setup({ keybind = "<leader>ls" })
+  end)
+end
 
 -- KEYBINDINGS
 
