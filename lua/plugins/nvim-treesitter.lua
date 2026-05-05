@@ -89,19 +89,26 @@ return {
         callback = register_custom_parsers,
       })
 
-      -- setup() is optional on main; only needed to override install_dir.
-      -- Async install of all desired parsers (filtering local-only ones
-      -- whose source isn't checked out on this machine).
-      local install_list = {}
-      local has_lattice = vim.fn.isdirectory(
-        vim.fn.expand("~/sandbox/current/lattice/tree-sitter-lattice")
-      ) == 1
-      for _, p in ipairs(ensure_installed) do
-        if p ~= "lattice" or has_lattice then
-          table.insert(install_list, p)
+      if vim.fn.executable("tree-sitter") == 1 then
+        -- setup() is optional on main; only needed to override install_dir.
+        -- Async install of all desired parsers (filtering local-only ones
+        -- whose source isn't checked out on this machine).
+        local install_list = {}
+        local has_lattice = vim.fn.isdirectory(
+          vim.fn.expand("~/sandbox/current/lattice/tree-sitter-lattice")
+        ) == 1
+        for _, p in ipairs(ensure_installed) do
+          if p ~= "lattice" or has_lattice then
+            table.insert(install_list, p)
+          end
         end
+        require("nvim-treesitter").install(install_list)
+      else
+        vim.notify(
+          "tree-sitter CLI not found; run dots brew install to build parsers",
+          vim.log.levels.WARN
+        )
       end
-      require("nvim-treesitter").install(install_list)
 
       -- Enable highlight + indent per buffer for our chosen filetypes.
       vim.api.nvim_create_autocmd("FileType", {
