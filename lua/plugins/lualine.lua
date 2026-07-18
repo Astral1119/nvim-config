@@ -2,9 +2,11 @@ return {
   "nvim-lualine/lualine.nvim",
   dependencies = { "nvim-tree/nvim-web-devicons" }, -- optional icons
   config = function()
+    -- livery palette when a Look is applied; moonfly-derived auto otherwise.
+    local livery_ok, livery = pcall(require, "livery")
     require("lualine").setup {
       options = {
-        theme = "auto",
+        theme = (livery_ok and livery.lualine_theme()) or "auto",
         globalstatus = true,
         section_separators = "",
         component_separators = "",

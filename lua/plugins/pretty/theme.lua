@@ -1,18 +1,5 @@
 return {
   {
-    "scottmckendry/cyberdream.nvim",
-    lazy = false,
-    config = function()
-      require("cyberdream").setup({
-        transparent = true,
-        styles = {
-          sidebars = "transparent",
-        },
-      })
-      -- vim.cmd("colorscheme cyberdream")
-    end,
-  },
-  {
     "bluz71/vim-moonfly-colors",
     name = "moonfly",
     lazy = false,
