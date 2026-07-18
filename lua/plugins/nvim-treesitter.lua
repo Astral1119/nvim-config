@@ -24,6 +24,8 @@ local ensure_installed = {
   "python", "bash",
   -- documents
   "markdown", "markdown_inline", "latex", "yaml",
+  -- proof assistants
+  "lean",
   -- custom / other
   "sql", "gsheets", "lattice",
 }
@@ -37,6 +39,7 @@ local ts_filetypes = {
   "javascript", "typescript", "typescriptreact", "html", "css", "json",
   "python", "bash", "sh",
   "markdown", "mdx", "latex", "tex", "yaml",
+  "lean",
   "sql", "gsheets", "lattice",
 }
 
@@ -50,7 +53,16 @@ local function register_custom_parsers()
     },
   }
 
-  local lattice_parser_dir = vim.fn.expand("~/sandbox/current/lattice/tree-sitter-lattice")
+  -- `lean` is not in nvim-treesitter's main-branch registry; register the
+  -- grammar from lean.nvim's author so :TSUpdate / install can build it.
+  parsers.lean = {
+    install_info = {
+      url = "https://github.com/Julian/tree-sitter-lean",
+      branch = "main",
+    },
+  }
+
+  local lattice_parser_dir = vim.fn.expand("~/sandbox/current/lattice/editors/tree-sitter-lattice")
   if vim.fn.isdirectory(lattice_parser_dir) == 1 then
     parsers.lattice = {
       install_info = {
@@ -95,7 +107,7 @@ return {
         -- whose source isn't checked out on this machine).
         local install_list = {}
         local has_lattice = vim.fn.isdirectory(
-          vim.fn.expand("~/sandbox/current/lattice/tree-sitter-lattice")
+          vim.fn.expand("~/sandbox/current/lattice/editors/tree-sitter-lattice")
         ) == 1
         for _, p in ipairs(ensure_installed) do
           if p ~= "lattice" or has_lattice then
