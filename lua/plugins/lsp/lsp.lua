@@ -91,6 +91,31 @@ return {
         vim.lsp.enable('lattice')
       end
 
+      -- Coq/Rocq: opam switch-local LSP. Keep the command absolute so Neovim
+      -- works when launched outside a shell that has run `opam env`.
+      local coq_lsp = vim.fn.expand('~/.dev/.opam/rocq/bin/coq-lsp')
+      if vim.fn.executable(coq_lsp) == 1 then
+        vim.lsp.config('coq_lsp', {
+          cmd = { coq_lsp },
+          filetypes = { 'coq' },
+          root_markers = { '_RocqProject', '_CoqProject', '.git' },
+          single_file_support = true,
+        })
+        vim.lsp.enable('coq_lsp')
+      end
+
+      -- Lean: use the project's lake environment so each proof tree gets the
+      -- toolchain pinned by its `lean-toolchain`.
+      if vim.fn.executable('lake') == 1 then
+        vim.lsp.config('lean', {
+          cmd = { 'lake', 'env', 'lean', '--server' },
+          filetypes = { 'lean' },
+          root_markers = { 'lakefile.lean', 'lakefile.toml', 'lean-toolchain', '.git' },
+          single_file_support = true,
+        })
+        vim.lsp.enable('lean')
+      end
+
       -- Enable servers explicitly. Mason installs the binaries; this tells
       -- Neovim to actually start each server when its filetype is opened.
       local servers = {

@@ -5,6 +5,7 @@ return {
   require("plugins.typr"),
   require("plugins.snacks"),
   require("plugins.lsp"),
+  require("plugins.proof"),
   require("plugins.which-key"),
   require("plugins.image"),
   require("plugins.lualine"),
