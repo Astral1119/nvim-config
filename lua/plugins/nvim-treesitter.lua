@@ -67,6 +67,7 @@ local function register_custom_parsers()
     parsers.lattice = {
       install_info = {
         path = lattice_parser_dir,
+        queries = "queries",
       },
     }
   end
@@ -132,6 +133,20 @@ return {
           end
         end,
       })
+
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "*",
+        callback = function()
+          vim.api.nvim_set_hl(0, "@variable.lattice", { fg = "#9ccfd8" })
+          vim.api.nvim_set_hl(0, "@variable.parameter.lattice", { fg = "#f6c177" })
+          vim.api.nvim_set_hl(0, "@variable.definition.lattice", { fg = "#c4a7e7" })
+          vim.api.nvim_set_hl(0, "@property.lattice", { fg = "#a3be8c" })
+          vim.api.nvim_set_hl(0, "@type.lattice", { fg = "#87c095" })
+          vim.api.nvim_set_hl(0, "@punctuation.delimiter.lattice", { fg = "#7f8490" })
+          vim.api.nvim_set_hl(0, "@punctuation.bracket.lattice", { fg = "#7f8490" })
+        end,
+      })
+      vim.api.nvim_exec_autocmds("ColorScheme", {})
     end,
   },
 
