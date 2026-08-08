@@ -50,11 +50,12 @@ local function register_custom_parsers()
     },
   }
 
-  local lattice_parser_dir = vim.fn.expand("~/sandbox/current/lattice/tree-sitter-lattice")
+  local lattice_parser_dir = vim.fn.expand("~/sandbox/current/lattice/editors/tree-sitter-lattice")
   if vim.fn.isdirectory(lattice_parser_dir) == 1 then
     parsers.lattice = {
       install_info = {
         path = lattice_parser_dir,
+        queries = "queries",
       },
     }
   end
@@ -94,7 +95,7 @@ return {
       -- whose source isn't checked out on this machine).
       local install_list = {}
       local has_lattice = vim.fn.isdirectory(
-        vim.fn.expand("~/sandbox/current/lattice/tree-sitter-lattice")
+        vim.fn.expand("~/sandbox/current/lattice/editors/tree-sitter-lattice")
       ) == 1
       for _, p in ipairs(ensure_installed) do
         if p ~= "lattice" or has_lattice then
@@ -113,6 +114,20 @@ return {
           end
         end,
       })
+
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "*",
+        callback = function()
+          vim.api.nvim_set_hl(0, "@variable.lattice", { fg = "#9ccfd8" })
+          vim.api.nvim_set_hl(0, "@variable.parameter.lattice", { fg = "#f6c177" })
+          vim.api.nvim_set_hl(0, "@variable.definition.lattice", { fg = "#c4a7e7" })
+          vim.api.nvim_set_hl(0, "@property.lattice", { fg = "#a3be8c" })
+          vim.api.nvim_set_hl(0, "@type.lattice", { fg = "#87c095" })
+          vim.api.nvim_set_hl(0, "@punctuation.delimiter.lattice", { fg = "#7f8490" })
+          vim.api.nvim_set_hl(0, "@punctuation.bracket.lattice", { fg = "#7f8490" })
+        end,
+      })
+      vim.api.nvim_exec_autocmds("ColorScheme", {})
     end,
   },
 

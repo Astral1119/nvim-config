@@ -75,12 +75,15 @@ return {
       -- ruff, ts_ls, clangd, texlab use nvim-lspconfig defaults with no overrides.
 
       -- Lattice (custom language, not in Mason or nvim-lspconfig).
-      -- Only enable if the `lattice` binary is on PATH; on machines without
-      -- the lattice toolchain checked out, configuring an unfindable cmd
-      -- causes startup errors.
-      if vim.fn.executable('lattice') == 1 then
+      -- Prefer the local checkout binary so `cargo build` updates the LSP
+      -- Neovim launches. Fall back to PATH for machines without this checkout.
+      local lattice_bin = vim.fn.expand('~/sandbox/current/lattice/target/debug/lattice')
+      if vim.fn.executable(lattice_bin) ~= 1 then
+        lattice_bin = 'lattice'
+      end
+      if vim.fn.executable(lattice_bin) == 1 then
         vim.lsp.config('lattice', {
-          cmd = { 'lattice', 'lsp' },
+          cmd = { lattice_bin, 'lsp' },
           filetypes = { 'lattice' },
           root_markers = { '.git', 'Cargo.toml', '.lattice', 'lattice.workspace' },
           single_file_support = true,
@@ -100,9 +103,6 @@ return {
         'texlab',
         'markdown_oxide',
       }
-      if vim.fn.executable('lattice') == 1 then
-        table.insert(servers, 'lattice_lsp')
-      end
       vim.lsp.enable(servers)
 
       -- Mason: installs/updates binaries. automatic_enable = false because we
