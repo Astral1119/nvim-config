@@ -59,6 +59,4 @@ vim.keymap.set("v", "<leader>x", "\"+ygvx", { desc = "Cut to clipboard", silent 
 
 vim.g.markdown_fenced_languages = {'python', 'cpp'}
 
-vim.g.python3_host_prog=vim.fn.expand("~/.local/share/nvim/.venv/bin/python3")
-
 vim.filetype.add({ extension = { mdx = "mdx", lat = "lattice" } })
