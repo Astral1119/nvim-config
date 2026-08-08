@@ -1,6 +1,6 @@
 return {
   {
-    dir = vim.fn.expand("~/personal/vestiary/livery.nvim"),
+    dir = vim.fn.expand("~/projects/vestiary/livery.nvim"),
     name = "livery.nvim",
     lazy = false,
     -- moonfly loads at priority 1000; the overlay must land after it.
